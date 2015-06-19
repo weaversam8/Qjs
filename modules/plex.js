@@ -285,6 +285,10 @@
             console.log(a);
         });
 
+        var errorCallback = (argumentObject.callback || function(e) {
+            throw e;
+        });
+
         var limit = argumentObject.limit || Infinity;
 
         var evaluateFunction = function(query, doc) {
@@ -364,10 +368,11 @@
 
         if (testReturnEvaluateFunction) return evaluateFunction;
 
-        var loopFunction = function(thingName, query, limit, page, outputArray, callback) {
+        var loopFunction = function(thingName, query, limit, page, outputArray, callback, errorCallback) {
             this.list({
                 name: thingName,
                 page: page,
+                errorCallback: errorCallback,
                 callback: function(result) {
                     var amountFound = 0;
                     for (var key in result) {
@@ -410,7 +415,7 @@
             });
         }.bind(this);
 
-        loopFunction(thingName, queryObject, limit, 0, [], callback);
+        loopFunction(thingName, queryObject, limit, 0, [], callback, errorCallback);
     };
 
     module.findOne = function(obj) {
